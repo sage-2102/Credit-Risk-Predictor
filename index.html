@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Credit Risk Predictor | Machine Learning Underwriting Engine</title>
+  <meta name="description" content="Interactive AI-powered Credit Risk Predictor using Logistic Regression and the German Credit dataset. 100% client-side inference deployable on GitHub Pages.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Background Glow FX -->
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-badges">
+        <span class="badge badge-accent">Scikit-Learn ML Core</span>
+        <span class="badge badge-purple">ROC-AUC: 0.8092</span>
+        <span class="badge badge-emerald">GitHub Pages Ready</span>
+      </div>
+      <h1 class="header-title">Credit Risk Predictor</h1>
+      <p class="header-subtitle">
+        Interactive credit default risk evaluator powered by calibrated Logistic Regression. Run simulations in real-time with zero backend latency.
+      </p>
+
+      <!-- Preset Bar -->
+      <div class="presets-container">
+        <span class="presets-label">Load Archetype:</span>
+        <button type="button" class="preset-btn" id="btnPresetPrime">🌟 Prime Borrower</button>
+        <button type="button" class="preset-btn" id="btnPresetAverage">⚖️ Average Applicant</button>
+        <button type="button" class="preset-btn" id="btnPresetRisky">⚠️ High Risk Applicant</button>
+        <button type="button" class="preset-btn preset-reset" id="btnReset">🔄 Reset</button>
+      </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="dashboard-grid">
+      <!-- Input Form Column -->
+      <section class="card form-card">
+        <div class="card-header">
+          <h2 class="card-title">Applicant Profile</h2>
+          <span class="badge badge-subtle">12 Key Risk Factors</span>
+        </div>
+
+        <form id="riskForm" autocomplete="off">
+          <!-- Numeric Group: Loan Info -->
+          <div class="form-section">
+            <h3 class="section-title">Loan Parameters</h3>
+
+            <div class="input-field">
+              <div class="field-label-row">
+                <label for="duration">Loan Duration (Months)</label>
+                <span class="field-val-badge" id="valDuration">24 mo</span>
+              </div>
+              <input type="range" id="duration" min="4" max="72" value="24" step="1" class="custom-slider">
+            </div>
+
+            <div class="input-field">
+              <div class="field-label-row">
+                <label for="credit_amount">Credit Amount (DM)</label>
+                <span class="field-val-badge" id="valCreditAmount">3,500 DM</span>
+              </div>
+              <input type="range" id="credit_amount" min="250" max="15000" value="3500" step="50" class="custom-slider">
+            </div>
+
+            <div class="form-row-2">
+              <div class="input-field">
+                <div class="field-label-row">
+                  <label for="installment_commitment">Installment Rate</label>
+                  <span class="field-val-badge" id="valInstallment">2%</span>
+                </div>
+                <input type="range" id="installment_commitment" min="1" max="4" value="2" step="1" class="custom-slider">
+              </div>
+
+              <div class="input-field">
+                <div class="field-label-row">
+                  <label for="residence_since">Residence (Years)</label>
+                  <span class="field-val-badge" id="valResidence">2 yr</span>
+                </div>
+                <input type="range" id="residence_since" min="1" max="4" value="2" step="1" class="custom-slider">
+              </div>
+            </div>
+          </div>
+
+          <!-- Numeric Group: Demographics -->
+          <div class="form-section">
+            <h3 class="section-title">Borrower Demographics</h3>
+
+            <div class="input-field">
+              <div class="field-label-row">
+                <label for="age">Borrower Age</label>
+                <span class="field-val-badge" id="valAge">30 yrs</span>
+              </div>
+              <input type="range" id="age" min="18" max="75" value="30" step="1" class="custom-slider">
+            </div>
+
+            <div class="form-row-2">
+              <div class="input-field">
+                <div class="field-label-row">
+                  <label for="existing_credits">Existing Credits</label>
+                  <span class="field-val-badge" id="valExistingCredits">1</span>
+                </div>
+                <input type="range" id="existing_credits" min="1" max="4" value="1" step="1" class="custom-slider">
+              </div>
+
+              <div class="input-field">
+                <div class="field-label-row">
+                  <label for="num_dependents">Dependents</label>
+                  <span class="field-val-badge" id="valDependents">1</span>
+                </div>
+                <input type="range" id="num_dependents" min="1" max="2" value="1" step="1" class="custom-slider">
+              </div>
+            </div>
+          </div>
+
+          <!-- Categorical Group -->
+          <div class="form-section">
+            <h3 class="section-title">Financial Standing & Track Record</h3>
+
+            <div class="input-field">
+              <label for="checking_status">Checking Account Status</label>
+              <select id="checking_status" class="custom-select">
+                <option value="<0">&lt; 0 DM (Overdraft / Negative)</option>
+                <option value="0<=X<200" selected>0 &le; Balance &lt; 200 DM</option>
+                <option value=">=200">&ge; 200 DM (Healthy Balance)</option>
+                <option value="no checking">No Checking Account (Safe / Untracked)</option>
+              </select>
+            </div>
+
+            <div class="input-field">
+              <label for="credit_history">Credit History Track Record</label>
+              <select id="credit_history" class="custom-select">
+                <option value="critical/other existing credit">Critical / Established credit lines active</option>
+                <option value="existing paid" selected>Existing loans paid promptly till now</option>
+                <option value="delayed previously">Delay in paying off loans previously</option>
+                <option value="no credits/all paid">No prior credits / All loans fully paid</option>
+                <option value="all paid">All existing bank credits paid duly</option>
+              </select>
+            </div>
+
+            <div class="form-row-2">
+              <div class="input-field">
+                <label for="savings_status">Savings Reserves</label>
+                <select id="savings_status" class="custom-select">
+                  <option value="<100">&lt; 100 DM (Minimal)</option>
+                  <option value="100<=X<500" selected>100 &le; X &lt; 500 DM</option>
+                  <option value="500<=X<1000">500 &le; X &lt; 1,000 DM</option>
+                  <option value=">=1000">&ge; 1,000 DM (Strong)</option>
+                  <option value="no known savings">No known savings</option>
+                </select>
+              </div>
+
+              <div class="input-field">
+                <label for="employment">Employment Duration</label>
+                <select id="employment" class="custom-select">
+                  <option value="unemployed">Unemployed</option>
+                  <option value="<1">&lt; 1 year</option>
+                  <option value="1<=X<4" selected>1 &le; X &lt; 4 years</option>
+                  <option value="4<=X<7">4 &le; X &lt; 7 years</option>
+                  <option value=">=7">&ge; 7 years (Tenured)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="input-field">
+              <label for="purpose">Loan Purpose</label>
+              <select id="purpose" class="custom-select">
+                <option value="radio/tv" selected>Radio / Television / Audio</option>
+                <option value="new car">New Automobile</option>
+                <option value="used car">Used Automobile</option>
+                <option value="furniture/equipment">Furniture / Equipment</option>
+                <option value="education">Higher Education / Tuition</option>
+                <option value="business">Business Venture</option>
+                <option value="domestic appliance">Domestic Appliance</option>
+                <option value="repairs">Repairs & Maintenance</option>
+                <option value="retraining">Career Retraining</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+          </div>
+        </form>
+      </section>
+
+      <!-- Prediction & Analytics Column -->
+      <section class="card results-card">
+        <div class="card-header">
+          <h2 class="card-title">Real-Time Risk Assessment</h2>
+          <span class="live-dot"><span class="pulsing-circle"></span> Live ML Inference</span>
+        </div>
+
+        <!-- Gauge Visualizer -->
+        <div class="gauge-container">
+          <svg class="gauge-svg" viewBox="0 0 240 140" id="gaugeSvg">
+            <!-- Background Arc -->
+            <path class="gauge-bg-arc" d="M 20 120 A 100 100 0 0 1 220 120" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="20" stroke-linecap="round"/>
+            <!-- Value Progress Arc -->
+            <path id="gaugeProgressArc" class="gauge-val-arc" d="M 20 120 A 100 100 0 0 1 220 120" fill="none" stroke="url(#gaugeGradient)" stroke-width="20" stroke-dasharray="314.159" stroke-dashoffset="157" stroke-linecap="round"/>
+            <!-- Gradients -->
+            <defs>
+              <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#10b981" />
+                <stop offset="50%" stop-color="#f59e0b" />
+                <stop offset="100%" stop-color="#ef4444" />
+              </linearGradient>
+            </defs>
+          </svg>
+
+          <!-- Gauge Central readout -->
+          <div class="gauge-readout">
+            <span class="probability-label">Default Probability</span>
+            <div class="probability-value" id="probDisplay">48.9%</div>
+            <div class="risk-badge" id="riskBadge">Medium Risk</div>
+          </div>
+        </div>
+
+        <!-- Decision Box -->
+        <div class="decision-box" id="decisionBox">
+          <div class="decision-icon" id="decisionIcon">⚖️</div>
+          <div class="decision-content">
+            <div class="decision-headline" id="decisionHeadline">Conditional / Secondary Review</div>
+            <p class="decision-text" id="decisionText">
+              Applicant poses moderate credit default probability. Recommend manual verification of income documents or requesting secondary collateral.
+            </p>
+          </div>
+        </div>
+
+        <!-- Risk Factors Breakdown -->
+        <div class="factors-section">
+          <div class="factors-header">
+            <h3 class="section-title">Key Factor Influences</h3>
+            <span class="factors-tip">Standardized Impact</span>
+          </div>
+          <div class="factors-list" id="factorsList">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- Architecture Callout -->
+        <div class="architecture-callout">
+          <div class="arch-header">
+            <span class="arch-tag">Client-Side Architecture</span>
+          </div>
+          <p class="arch-desc">
+            Model weights ($w$), bias ($b$), and scaling parameters ($\mu, \sigma$) run natively in browser memory via Javascript. No API keys or remote compute required.
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <div class="footer-links">
+        <a href="https://github.com" target="_blank" rel="noopener noreferrer">GitHub Repository</a>
+        <span>&bull;</span>
+        <span>German Credit Benchmark (OpenML credit-g)</span>
+        <span>&bull;</span>
+        <span>Logistic Regression with L2 Regularization</span>
+      </div>
+      <p class="footer-note">Built for transparency, interpretability, and seamless GitHub Pages deployment.</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
